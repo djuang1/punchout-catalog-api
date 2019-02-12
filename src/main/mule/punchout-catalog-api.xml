@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:xml-module="http://www.mulesoft.org/schema/mule/xml-module" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+http://www.mulesoft.org/schema/mule/xml-module http://www.mulesoft.org/schema/mule/xml-module/current/mule-xml-module.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
+http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd">
+    <http:listener-config name="punchout-catalog-api-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <apikit:config name="punchout-catalog-api-config" raml="punchout-catalog-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <http:request-config name="HTTPS_Request_configuration" doc:name="HTTP Request configuration" doc:id="00cae5a3-3bd3-45a1-81a8-e004601ac100">
+        <http:request-connection protocol="HTTPS" host="sdodemo-main-166ce2cf6b6-1683e62625a.force.com" port="443" usePersistentConnections="false" />
+    </http:request-config>
+    <os:object-store name="cXMLCallbackStore" doc:name="Object store" doc:id="d4acf289-e992-45d0-8659-2d6d5d96b2b5" />
+	<api-gateway:autodiscovery apiId="15635843" doc:name="API Autodiscovery" doc:id="8317178f-83fc-4852-a6a5-46d7e3a92ce4" flowRef="punchout-catalog-api-main" />
+	<flow name="punchout-catalog-api-main">
+        <http:listener config-ref="punchout-catalog-api-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="punchout-catalog-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Bad request"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Method not allowed"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not acceptable"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Unsupported media type"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Not Implemented"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="punchout-catalog-api-console">
+        <http:listener config-ref="punchout-catalog-api-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="punchout-catalog-api-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="post:\cxml:punchout-catalog-api-config">
+        <logger level="INFO" doc:name="Logger" doc:id="5c398019-0058-4fdd-9f73-ba998e340fa0" />
+		<ee:transform doc:name="Transform Message" doc:id="38c46b80-0d0f-46a6-b903-5e4576520721">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+payload.'cXML-urlencoded' as String replace /\<!DOCTYPE.+\>/ with '']]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<set-payload value="#[output application/xml --- read(payload,'application/xml')]" doc:name="Set Payload" doc:id="888cb4c8-8b49-47b5-91bd-bfc9f97ca24e" />
+		<set-variable value="#[output text/plain --- payload.cXML.Request.PunchOutSetupRequest.@operation]" doc:name="Set Operation" doc:id="51594e37-8c04-44c8-9bed-60a14450820f" variableName="operation"/>
+		<os:store doc:name="Store" doc:id="67932476-d028-4826-9075-81c42733b088" key="#[output text/plain --- payload.cXML.Request.PunchOutSetupRequest.BuyerCookie]" objectStore="cXMLCallbackStore">
+			<os:value ><![CDATA[#[output text/plain --- payload.cXML.Request.PunchOutSetupRequest.BrowserFormPost.URL]]]></os:value>
+		</os:store>
+		<choice doc:name="Choice" doc:id="de027d7d-8187-49eb-94b0-809c199ccb91" >
+			<when expression="#[vars.operation == 'create']">
+				<ee:transform doc:name="Transform Message" doc:id="283dd258-24ce-4d22-95e0-9e0c647f3058">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/xml
+---
+{
+	cXML @(timestamp: now() , lang: "en-US"): {
+		Response: {
+			Status @(code: 200 , text: "OK"): null,
+			PunchOutSetupResponse: {
+				StartPage: {
+					URL: "https://sdodemo-main-166ce2cf6b6-1683e62625a.force.com/DefaultStore/login?pw=salesforce1&un=lbailey@mrc.com"
+				}
+			}
+		}
+	}
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+			</when>
+			<otherwise >
+				<logger level="INFO" doc:name="Logger" doc:id="80f3ac7f-9bd5-43ad-b528-bc5ba098a8b1" message="No Operation"/>
+			</otherwise>
+		</choice>
+    </flow>
+    <flow name="get:\cxml:punchout-catalog-api-config">
+        <parse-template doc:name="Parse Template" doc:id="fddbd0b4-4f85-41e6-a814-c4b473001768" location="form.html" />
+    </flow>
+    <flow name="get:\oci\PunchOutSetup:punchout-catalog-api-config">
+        <http:request method="GET" doc:name="Request" doc:id="03e884a1-54e7-463e-bf52-f286003809e7" config-ref="HTTPS_Request_configuration" path="/DefaultStore/login" followRedirects="true" outputMimeType="text/plain">
+            <http:headers><![CDATA[#[output application/java
+---
+{
+	"Content-Type" : "text/html"
+}]]]></http:headers>
+            <http:query-params><![CDATA[#[output application/java
+---
+{
+	"pw" : attributes.queryParams.PASSWORD,
+	"un" : attributes.queryParams.USERNAME
+}]]]></http:query-params>
+        </http:request>
+        <logger level="INFO" doc:name="Logger" doc:id="1690a1ce-d39b-4c3c-8c91-3176d054fa1d" />
+        <set-payload value="#[write(payload, 'text/plain') replace &quot;/DefaultStore&quot; with &quot;https://sdodemo-main-166ce2cf6b6-1683e62625a.force.com/DefaultStore&quot;]" doc:name="Set Payload" doc:id="ed2c1383-9100-44eb-b285-3adeffaddecd" mimeType="text/html" />
+    </flow>
+    <flow name="post:\oci\callback:punchout-catalog-api-config">
+        <logger level="INFO" message="post:\oci\callback:punchout-catalog-api-config" />
+    </flow>
+    <flow name="post:\cxml\callback:punchout-catalog-api-config">
+        <os:retrieve doc:name="Retrieve" doc:id="0b80aa0f-cc68-45f8-ac17-20aa7693162d" key="#[attributes.headers.buyercookie]" objectStore="cXMLCallbackStore"/>
+		<logger level="INFO" message="post:\cxml\callback:punchout-catalog-api-config" />
+    </flow>
+</mule>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE cXML SYSTEM "http://xml.cxml.org/schemas/cXML/1.2.011/cXML.dtd">
+<cXML payloadID="1544655482929.1@testcatalog.mrcglobal.com"
+        timestamp="2018-12-12T17:58:02-5:00" xml:lang="en-US">
+        <Response>
+                <Status code="200" text="OK"/>
+                <PunchOutSetupResponse>
+                        <StartPage>
+                                <URL>https://testcatalog.mrcglobal.com/webapp/wcs/stores/servlet/PunchOutCatalogDisplay?supplierCookie=0zrfHA__plus__%3BPRYSaIoODAL9ncofsEAW7%2FgMc%2FTqCCogjuhY%3D</URL>
+                        </StartPage>
+                </PunchOutSetupResponse>
+        </Response>
+</cXML>

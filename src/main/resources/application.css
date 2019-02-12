@@ -1,0 +1,86 @@
+/* Core Styles */
+strong { font-weight: bold; }
+
+/* Header */
+#hd {
+	border-bottom: 1px solid #EBEBEB;
+}
+
+#hd .navbar {
+	margin-bottom: 10px;
+}
+
+#hd .navbar-default {
+	background-color: #fff;
+	border: 0;
+}
+
+#hd .page-title {
+	background-color: #00A1E2;
+	color: #fff;
+}
+
+#hd .page-title h1 {
+	margin-top: 10px;
+	margin-left: 13px;
+}
+
+/* Body */
+#bd {
+	padding: 20px;
+}
+
+#bd h2 {
+	margin-top: 0;
+}
+
+/* Footer */
+#ft {
+	text-align: center; 
+	font-size: 93%; 
+	padding-bottom: 3px;	
+	border-top: 1px solid #EBEBEB;
+	background-color: #00A1E2;
+	padding: 30px;
+	color: #fff;
+}
+
+#ft a {
+	color: #fff;
+}
+
+/* Tooltips */
+.tooltip .tooltip-inner {
+	background-color: #9FDAEE;
+	color: #000;
+	border: 1px solid #2BB0D7;
+	text-align: left;
+}
+
+.tooltip.bottom .tooltip-arrow {
+	border-bottom-color: #2BB0D7;
+}
+
+.xml { font-family: monospace; }
+
+/* Form Tables */
+.form-table td { padding: 6px; }
+
+.form-table th {
+	font-weight: bold;
+	text-align: right;
+}
+
+.form-table input[type=text] {
+	width: 300px;
+}
+
+input#url,
+.form-table-wide input[type=text] {
+	width: 450px;
+}
+
+.basic-table td, .basic-table th {
+	border: 1px solid #ccc;
+	padding: 2px 4px;
+}

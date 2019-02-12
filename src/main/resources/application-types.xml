@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="cxml_setup_response" format="xml">
+      <types:example format="xml" element="cXML" location="cxml_setup_response.xml"/>
+    </types:type>
+    <types:type name="cxml_setup_request" format="xml">
+      <types:example format="xml" element="cXML" location="cxml_setup_request.xml"/>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#283dd258-24ce-4d22-95e0-9e0c647f3058">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="cxml_setup_response"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

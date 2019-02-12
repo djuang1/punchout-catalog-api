@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>cXML PunchOut Tester</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="keywords" content="cxml,punchout,tester,emulator,punch,out,ariba">
+	<script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+
+
+	<link rel="stylesheet" media="all" type="text/css" href="https://dejim.s3.amazonaws.com/punchout/application.css" />
+
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
+
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+	<script src="https://dejim.s3.amazonaws.com/punchout/script.js"></script>
+
+	<style type="text/css">
+		textarea { font-family: 'Courier New'; }
+
+		.basic-view .advanced {
+			display: none;
+		}
+
+		.basic-view .basic-link,
+		.advanced-view .advanced-link {
+			color: #000;
+			text-decoration: none;
+		}
+
+		#url { width: 600px; }
+		.view label { font-weight: bold; }
+	</style>
+
+</head>
+<body>
+<div id="doc" class="basic-view">
+		<div id="hd">
+		<div class="container">
+		<div class="navbar navbar-default">
+			<div class="container-fluid">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a class="navbar-brand" href="/punchout/">
+						<img src="https://dejim.s3.amazonaws.com/punchout/MuleSoft_logo_299C.png" height="35" alt="MuleSoft">
+					</a>
+				</div>
+			</div>
+		</div>
+		</div>
+		<div class="page-title">
+			<div class="container">
+				<h1>cXML PunchOut Tester</h1>
+			</div>
+		</div>
+	</div>
+	<div id="bd" class="container">
+				<div class="view">
+			<label>View:</label>
+			<a href="#basic" onclick="toggleView(0)" class="basic-link">Basic</a>&nbsp;&nbsp;|&nbsp;&nbsp;
+			<a href="#advanced" onclick="toggleView(1)" class="advanced-link">Advanced</a>
+		</div>
+		<form method="POST" action="" id="punchout_form" onsubmit="return onFormSubmit()" enctype="application/x-www-form-urlencoded">
+			<input type="hidden" id="cxmlUrlencoded" name="cXML-urlencoded" value="">
+			<table class="form-table">
+				<tr>
+					<th><label>URL:</label></th>
+					<td><input type="text" id="url" onchange="updateURL(this.value)" onkeyup="updateURL(this.value)" value="http://mock-browserform.us-e1.cloudhub.io/order"></td>
+				</tr>
+			</table>
+			<strong>Variables</strong>
+			<table id="variablesTable" class="form-table">
+								<tr class="basic">
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML();updateTooltipTitles()"
+							id="name0" value="FromDomain">
+					</td>
+					<td>=</td>
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML()"
+							id="value0" value="NetworkId">
+					</td>
+					<td style="padding-left:0;">
+						<div id="help0" class="help" title="" data-toggle="tooltip" data-html="true" data-placement="bottom"></div>
+					</td>
+				</tr>
+								<tr class="basic">
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML();updateTooltipTitles()"
+							id="name1" value="FromIdentity">
+					</td>
+					<td>=</td>
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML()"
+							id="value1" value="">
+					</td>
+					<td style="padding-left:0;">
+						<div id="help1" class="help" title="" data-toggle="tooltip" data-html="true" data-placement="bottom"></div>
+					</td>
+				</tr>
+								<tr class="basic">
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML();updateTooltipTitles()"
+							id="name2" value="ToDomain">
+					</td>
+					<td>=</td>
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML()"
+							id="value2" value="DUNS">
+					</td>
+					<td style="padding-left:0;">
+						<div id="help2" class="help" title="" data-toggle="tooltip" data-html="true" data-placement="bottom"></div>
+					</td>
+				</tr>
+								<tr class="basic">
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML();updateTooltipTitles()"
+							id="name3" value="ToIdentity">
+					</td>
+					<td>=</td>
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML()"
+							id="value3" value="">
+					</td>
+					<td style="padding-left:0;">
+						<div id="help3" class="help" title="" data-toggle="tooltip" data-html="true" data-placement="bottom"></div>
+					</td>
+				</tr>
+								<tr class="basic">
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML();updateTooltipTitles()"
+							id="name4" value="SenderDomain">
+					</td>
+					<td>=</td>
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML()"
+							id="value4" value="NetworkId">
+					</td>
+					<td style="padding-left:0;">
+						<div id="help4" class="help" title="" data-toggle="tooltip" data-html="true" data-placement="bottom"></div>
+					</td>
+				</tr>
+								<tr class="basic">
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML();updateTooltipTitles()"
+							id="name5" value="SenderIdentity">
+					</td>
+					<td>=</td>
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML()"
+							id="value5" value="">
+					</td>
+					<td style="padding-left:0;">
+						<div id="help5" class="help" title="" data-toggle="tooltip" data-html="true" data-placement="bottom"></div>
+					</td>
+				</tr>
+								<tr class="basic">
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML();updateTooltipTitles()"
+							id="name6" value="SharedSecret">
+					</td>
+					<td>=</td>
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML()"
+							id="value6" value="">
+					</td>
+					<td style="padding-left:0;">
+						<div id="help6" class="help" title="" data-toggle="tooltip" data-html="true" data-placement="bottom"></div>
+					</td>
+				</tr>
+								<tr class="advanced">
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML();updateTooltipTitles()"
+							id="name7" value="PayloadID">
+					</td>
+					<td>=</td>
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML()"
+							id="value7" value="1545406648.1164@equallevel.com">
+					</td>
+					<td style="padding-left:0;">
+						<div id="help7" class="help" title="" data-toggle="tooltip" data-html="true" data-placement="bottom"></div>
+					</td>
+				</tr>
+								<tr class="advanced">
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML();updateTooltipTitles()"
+							id="name8" value="Timestamp">
+					</td>
+					<td>=</td>
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML()"
+							id="value8" value="2018-12-21T15:37:28+00:00">
+					</td>
+					<td style="padding-left:0;">
+						<div id="help8" class="help" title="" data-toggle="tooltip" data-html="true" data-placement="bottom"></div>
+					</td>
+				</tr>
+								<tr class="advanced">
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML();updateTooltipTitles()"
+							id="name9" value="BuyerCookie">
+					</td>
+					<td>=</td>
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML()"
+							id="value9" value="d0b3765bae23091cf1c07b083293f787">
+					</td>
+					<td style="padding-left:0;">
+						<div id="help9" class="help" title="" data-toggle="tooltip" data-html="true" data-placement="bottom"></div>
+					</td>
+				</tr>
+								<tr class="advanced">
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML();updateTooltipTitles()"
+							id="name10" value="PunchoutOrderReceiver">
+					</td>
+					<td>=</td>
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML()"
+							id="value10" value="http://mock-buyer.us-e1.cloudhub.io/cxml">
+					</td>
+					<td style="padding-left:0;">
+						<div id="help10" class="help" title="" data-toggle="tooltip" data-html="true" data-placement="bottom"></div>
+					</td>
+				</tr>
+								<tr class="advanced">
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML();updateTooltipTitles()"
+							id="name11" value="SupplierSetupURL">
+					</td>
+					<td>=</td>
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML()"
+							id="value11" value="http://mock-buyer.us-e1.cloudhub.io/cxml">
+					</td>
+					<td style="padding-left:0;">
+						<div id="help11" class="help" title="" data-toggle="tooltip" data-html="true" data-placement="bottom"></div>
+					</td>
+				</tr>
+								<tr class="advanced">
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML();updateTooltipTitles()"
+							id="name12" value="User">
+					</td>
+					<td>=</td>
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML()"
+							id="value12" value="lbailey">
+					</td>
+					<td style="padding-left:0;">
+						<div id="help12" class="help" title="" data-toggle="tooltip" data-html="true" data-placement="bottom"></div>
+					</td>
+				</tr>
+								<tr class="advanced">
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML();updateTooltipTitles()"
+							id="name13" value="UniqueUsername">
+					</td>
+					<td>=</td>
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML()"
+							id="value13" value="lbailey">
+					</td>
+					<td style="padding-left:0;">
+						<div id="help13" class="help" title="" data-toggle="tooltip" data-html="true" data-placement="bottom"></div>
+					</td>
+				</tr>
+								<tr class="advanced">
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML();updateTooltipTitles()"
+							id="name14" value="">
+					</td>
+					<td>=</td>
+					<td>
+						<input type="text" onkeydown="updateXML()" onchange="updateXML()"
+							id="value14" value="">
+					</td>
+					<td style="padding-left:0;">
+						<div id="help14" class="help" title="" data-toggle="tooltip" data-html="true" data-placement="bottom"></div>
+					</td>
+				</tr>
+							</table>
+			<div class="advanced">
+				<strong>cXML Template</strong>
+				<textarea id="cxml" style="width: 100%; height: 500px" onchange="updateXML()">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;!DOCTYPE cXML SYSTEM &quot;http://xml.cxml.org/schemas/cXML/1.2.028/cXML.dtd&quot;&gt;
+&lt;cXML payloadID=&quot;@PayloadID@&quot; timestamp=&quot;@Timestamp@&quot; version=&quot;1.0&quot; xml:lang=&quot;en&quot;&gt;
+  &lt;Header&gt;
+    &lt;From&gt;
+      &lt;Credential domain=&quot;@FromDomain@&quot;&gt;
+        &lt;Identity&gt;@FromIdentity@&lt;/Identity&gt;
+      &lt;/Credential&gt;
+    &lt;/From&gt;
+    &lt;To&gt;
+      &lt;Credential domain=&quot;@ToDomain@&quot;&gt;
+        &lt;Identity&gt;@ToIdentity@&lt;/Identity&gt;
+      &lt;/Credential&gt;
+    &lt;/To&gt;
+    &lt;Sender&gt;
+      &lt;Credential domain=&quot;@SenderDomain@&quot;&gt;
+        &lt;Identity&gt;@SenderIdentity@&lt;/Identity&gt;
+        &lt;SharedSecret&gt;@SharedSecret@&lt;/SharedSecret&gt;
+      &lt;/Credential&gt;
+      &lt;UserAgent&gt;MuleSoft cXML PunchOut Tester&lt;/UserAgent&gt;
+    &lt;/Sender&gt;
+  &lt;/Header&gt;
+  &lt;Request deploymentMode=&quot;production&quot;&gt;
+    &lt;PunchOutSetupRequest operation=&quot;create&quot;&gt;
+      &lt;BuyerCookie&gt;@BuyerCookie@&lt;/BuyerCookie&gt;
+      &lt;Extrinsic name=&quot;User&quot;&gt;@User@&lt;/Extrinsic&gt;
+      &lt;Extrinsic name=&quot;UniqueUsername&quot;&gt;@User@&lt;/Extrinsic&gt;
+      &lt;Extrinsic name=&quot;UserId&quot;&gt;12345&lt;/Extrinsic&gt;
+      &lt;Extrinsic name=&quot;UserEmail&quot;&gt;lbailey@mrc.com&lt;/Extrinsic&gt;
+      &lt;Extrinsic name=&quot;UserFullName&quot;&gt;Lauren Bailey&lt;/Extrinsic&gt;
+      &lt;Extrinsic name=&quot;UserPrintableName&quot;&gt;John Doe&lt;/Extrinsic&gt;
+      &lt;Extrinsic name=&quot;FirstName&quot;&gt;Lauren&lt;/Extrinsic&gt;
+      &lt;Extrinsic name=&quot;LastName&quot;&gt;Bailey&lt;/Extrinsic&gt;
+      &lt;Extrinsic name=&quot;PhoneNumber&quot;&gt;555-555-5555&lt;/Extrinsic&gt;
+      &lt;BrowserFormPost&gt;
+        &lt;URL&gt;@PunchoutOrderReceiver@&lt;/URL&gt;
+      &lt;/BrowserFormPost&gt;
+      &lt;SupplierSetup&gt;
+        &lt;URL&gt;@SupplierSetupURL@&lt;/URL&gt;
+      &lt;/SupplierSetup&gt;
+      &lt;ShipTo&gt;
+        &lt;Address addressID=&quot;TEST&quot;&gt;
+          &lt;Name xml:lang=&quot;en&quot;&gt;TEST&lt;/Name&gt;
+          &lt;PostalAddress&gt;
+            &lt;Street&gt;123 Street Address&lt;/Street&gt;
+            &lt;City&gt;Rockville&lt;/City&gt;
+            &lt;State&gt;MD&lt;/State&gt;
+            &lt;PostalCode&gt;20855&lt;/PostalCode&gt;
+            &lt;Country isoCountryCode=&quot;US&quot;&gt;US&lt;/Country&gt;
+          &lt;/PostalAddress&gt;
+        &lt;/Address&gt;
+      &lt;/ShipTo&gt;
+    &lt;/PunchOutSetupRequest&gt;
+  &lt;/Request&gt;
+&lt;/cXML&gt;
+</textarea>
+			</div>
+			<table style="margin: 10px 0;">
+				<tr>
+					<th class="advanced">
+						<select id="encodeMethod" class="form-control">
+							<option value="raw">raw xml (server side)</option>
+							<option value="url">url encoded</option>
+						</select>
+					</th>
+					<td>&nbsp;</td>
+					<td><input type="submit" value="Submit" class="btn btn-primary"></td>
+				</tr>
+			</table>
+		</form>
+		<div class="advanced">
+			<strong>cXML Preview</strong>
+			<textarea style="width: 100%; height: 500px" id="outputXml" readonly="readonly"></textarea>
+		</div>
+	</div>
+	<div id="ft">&copy; 2019 <a href="https://www.mulesoft.com/" target="_blank">MuleSoft</a>. All rights reserved.</div>
+	<script type="text/javascript">init();</script>
+</div>
+</body>
+</html>

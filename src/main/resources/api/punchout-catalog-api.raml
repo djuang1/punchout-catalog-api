@@ -1,0 +1,77 @@
+#%RAML 1.0
+version: v1
+title: PunchOut Catalog API
+baseUri: http://localhost:8081/api
+/oci:
+  /PunchOutSetup:
+    get:
+      queryParameters:
+        USERNAME:
+          description: Username
+          type:        string
+          example:     "lbailey@mrc.com"
+        PASSWORD:
+          description: Password
+          type:        string
+          example:     "password"
+        HOOKURL:
+          description: URL where to return the contents of the cart.
+          type:        string
+          example:     "lbailey@mrc.com"
+        BUYER_USERNAME:
+          description: Buyer Username
+          type:        string
+          example:     "lbailey"
+        FUNCTION:
+          enum:       [VALIDATE, SEARCH, BACKGROUND_SEARCH]
+        SEARCHSTRING:
+          description: Search string
+          type:       string
+        PRODUCTID:
+          description: Product ID
+          type:       string
+  /callback:
+    post:
+      body:
+        text/html:
+      responses:
+        200:
+          body:
+            application/json:
+              example:
+                { 
+                  "Status":"Success"
+                }
+/cxml:  
+  get:
+    responses:
+      200:         
+  post:    
+    body:
+      application/x-www-form-urlencoded:        
+    responses:
+      200:
+        body:
+          application/xml:
+            example:
+              <cXML timestamp="2019-02-07T10:37:16.882-06:00" lang="en-US">
+              <Response>
+                <Status code="200" text="OK"/>
+                <PunchOutSetupResponse>
+                  <StartPage>
+                    <URL>
+                    https://sdodemo-main-166ce2cf6b6-1683e62625a.force.com/DefaultStore/login?pw=salesforce1&un=lbailey@mrc.com
+                    </URL>
+                  </StartPage>
+                </PunchOutSetupResponse>
+              </Response>
+              </cXML>
+  /callback:
+    post:
+      body:
+        application/xml:
+      responses:
+        200:
+          body:
+            application/xml:
+              example:

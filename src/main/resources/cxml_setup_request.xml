@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE cXML SYSTEM "http://xml.cxml.org/schemas/cXML/1.2.028/cXML.dtd">
+<cXML payloadID="1545406648.1164@equallevel.com" timestamp="2018-12-21T15:37:28+00:00" version="1.0" xml:lang="en">
+  <Header>
+    <From>
+      <Credential domain="NetworkId">
+        <Identity></Identity>
+      </Credential>
+    </From>
+    <To>
+      <Credential domain="DUNS">
+        <Identity></Identity>
+      </Credential>
+    </To>
+    <Sender>
+      <Credential domain="NetworkId">
+        <Identity></Identity>
+        <SharedSecret></SharedSecret>
+      </Credential>
+      <UserAgent>Equal Level PunchOut Tester</UserAgent>
+    </Sender>
+  </Header>
+  <Request deploymentMode="production">
+    <PunchOutSetupRequest operation="create">
+      <BuyerCookie>d0b3765bae23091cf1c07b083293f787</BuyerCookie>
+      <Extrinsic name="User">jdoe12345</Extrinsic>
+      <Extrinsic name="UniqueUsername">jdoe12345</Extrinsic>
+      <Extrinsic name="UserId">12345</Extrinsic>
+      <Extrinsic name="UserEmail">info@equallevel.com</Extrinsic>
+      <Extrinsic name="UserFullName">John Doe</Extrinsic>
+      <Extrinsic name="UserPrintableName">John Doe</Extrinsic>
+      <Extrinsic name="FirstName">John</Extrinsic>
+      <Extrinsic name="LastName">Doe</Extrinsic>
+      <Extrinsic name="PhoneNumber">555-555-5555</Extrinsic>
+      <BrowserFormPost>
+        <URL>https://mulesoft.com/punchout/cxml_punchin.php</URL>
+      </BrowserFormPost>
+      <SupplierSetup>
+        <URL></URL>
+      </SupplierSetup>
+      <ShipTo>
+        <Address addressID="TEST">
+          <Name xml:lang="en">TEST</Name>
+          <PostalAddress>
+            <Street>123 Street Address</Street>
+            <City>Rockville</City>
+            <State>MD</State>
+            <PostalCode>20855</PostalCode>
+            <Country isoCountryCode="US">US</Country>
+          </PostalAddress>
+        </Address>
+      </ShipTo>
+    </PunchOutSetupRequest>
+  </Request>
+</cXML>
