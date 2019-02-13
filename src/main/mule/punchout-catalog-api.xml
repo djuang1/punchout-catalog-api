@@ -8,8 +8,8 @@ http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/m
         <http:listener-connection host="0.0.0.0" port="8081" />
     </http:listener-config>
     <apikit:config name="punchout-catalog-api-config" raml="punchout-catalog-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
-    <http:request-config name="HTTPS_Request_configuration" doc:name="HTTP Request configuration" doc:id="00cae5a3-3bd3-45a1-81a8-e004601ac100">
-        <http:request-connection protocol="HTTPS" host="sdodemo-main-166ce2cf6b6-1683e62625a.force.com" port="443" usePersistentConnections="false" />
+    <http:request-config name="HTTPS_Request_configuration" doc:name="HTTP Request configuration" doc:id="00cae5a3-3bd3-45a1-81a8-e004601ac100" followRedirects="true">
+        <http:request-connection protocol="HTTPS" host="sdodemo-main-166ce2cf6b6-1683e62625a.force.com" port="443"/>
     </http:request-config>
     <os:object-store name="cXMLCallbackStore" doc:name="Object store" doc:id="d4acf289-e992-45d0-8659-2d6d5d96b2b5" />
 	<api-gateway:autodiscovery apiId="15635843" doc:name="API Autodiscovery" doc:id="8317178f-83fc-4852-a6a5-46d7e3a92ce4" flowRef="punchout-catalog-api-main" />
@@ -178,27 +178,29 @@ output application/xml
         <parse-template doc:name="Parse Template" doc:id="fddbd0b4-4f85-41e6-a814-c4b473001768" location="form.html" />
     </flow>
     <flow name="get:\oci\PunchOutSetup:punchout-catalog-api-config">
-        <http:request method="GET" doc:name="Request" doc:id="03e884a1-54e7-463e-bf52-f286003809e7" config-ref="HTTPS_Request_configuration" path="/DefaultStore/login" followRedirects="true" outputMimeType="text/plain">
-            <http:headers><![CDATA[#[output application/java
----
-{
-	"Content-Type" : "text/html"
-}]]]></http:headers>
+        <logger level="INFO" doc:name="Logger" doc:id="1690a1ce-d39b-4c3c-8c91-3176d054fa1d" />
+		<http:request method="GET" doc:name="Request" doc:id="03e884a1-54e7-463e-bf52-f286003809e7" config-ref="HTTPS_Request_configuration" path="/DefaultStore/login" outputMimeType="text/plain" followRedirects="true">
             <http:query-params><![CDATA[#[output application/java
 ---
 {
 	"pw" : attributes.queryParams.PASSWORD,
-	"un" : attributes.queryParams.USERNAME
+	"un" : attributes.queryParams.USERNAME,
+	"startURL" : "apex/ccrz__Cart"
 }]]]></http:query-params>
         </http:request>
-        <logger level="INFO" doc:name="Logger" doc:id="1690a1ce-d39b-4c3c-8c91-3176d054fa1d" />
-        <set-payload value="#[write(payload, 'text/plain') replace &quot;/DefaultStore&quot; with &quot;https://sdodemo-main-166ce2cf6b6-1683e62625a.force.com/DefaultStore&quot;]" doc:name="Set Payload" doc:id="ed2c1383-9100-44eb-b285-3adeffaddecd" mimeType="text/html" />
+		<set-payload value="#[write(payload, 'text/plain') replace &quot;\&quot;/DefaultStore&quot; with &quot;\&quot;https://sdodemo-main-166ce2cf6b6-1683e62625a.force.com/DefaultStore&quot;]" doc:name="Set Payload" doc:id="e923a123-0277-4d0a-97f2-c7344ee723ab" mimeType="text/html"/>
+		<logger level="INFO" doc:name="Logger" doc:id="b3c0df6a-2f0c-4d2c-aecf-2a3b5f598e95" />
+		
+		
+		
     </flow>
     <flow name="post:\oci\callback:punchout-catalog-api-config">
         <logger level="INFO" message="post:\oci\callback:punchout-catalog-api-config" />
+		<parse-template doc:name="Parse Template" doc:id="abccc0f5-9c4b-4cbe-aad3-416151a65413" location="oci.html"/>
+		<logger level="INFO" doc:name="Logger" doc:id="da889f99-93e4-4e8e-a0c8-c353e65cfc13" />
     </flow>
     <flow name="post:\cxml\callback:punchout-catalog-api-config">
-        <os:retrieve doc:name="Retrieve" doc:id="0b80aa0f-cc68-45f8-ac17-20aa7693162d" key="#[attributes.headers.buyercookie]" objectStore="cXMLCallbackStore"/>
+        <os:retrieve doc:name="Retrieve" doc:id="0b80aa0f-cc68-45f8-ac17-20aa7693162d" key="#[attributes.headers.buyercookie]" objectStore="cXMLCallbackStore" target="buyerUrl"/>
 		<logger level="INFO" message="post:\cxml\callback:punchout-catalog-api-config" />
     </flow>
 </mule>

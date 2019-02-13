@@ -1,0 +1,22 @@
+<html>
+   <head>
+      <title>OCI ORDER TRANSMIT</title>
+   </head>
+   <body bgcolor="#ffffcc" text="#0000ff">
+   
+#[output application/xml
+---
+{
+	form: {
+		((1 to payload.totalQuantity) map {
+			"input" @(name:'NEW_ITEM-PRICE[$]', 'type':'hidden','value':payload.ECartItemsS[$ - 1].price): null,
+			"input" @(name:'NEW_ITEM-QUANTITY[$]', 'type':'hidden','value':payload.ECartItemsS[$ - 1].quantity): null
+		})
+	}
+}]
+         <h3>
+                       Please wait while we transmit your order...
+               </h3>
+      
+   </body>
+</html>
