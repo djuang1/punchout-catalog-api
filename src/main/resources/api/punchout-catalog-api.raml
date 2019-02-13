@@ -34,14 +34,12 @@ baseUri: http://localhost:8081/api
     post:
       body:
         application/json:
+          example:
+            !include cart.json
       responses:
         200:
           body:
-            application/json:
-              example:
-                { 
-                  "Status":"Success"
-                }
+            text/html:
 /cxml:  
   get:
     responses:
@@ -78,7 +76,4 @@ baseUri: http://localhost:8081/api
                 { 
                   "Status":"Success"
                 }
-                
-
-    
-    
+             

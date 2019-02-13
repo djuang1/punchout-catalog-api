@@ -197,7 +197,7 @@ output application/xml
     <flow name="post:\oci\callback:punchout-catalog-api-config">
         <logger level="INFO" message="post:\oci\callback:punchout-catalog-api-config" />
 		<parse-template doc:name="Parse Template" doc:id="abccc0f5-9c4b-4cbe-aad3-416151a65413" location="oci.html"/>
-		<logger level="INFO" doc:name="Logger" doc:id="da889f99-93e4-4e8e-a0c8-c353e65cfc13" />
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="ed1389c6-05f7-4a23-98e3-4796c0d79189" mimeType="text/html"/>
     </flow>
     <flow name="post:\cxml\callback:punchout-catalog-api-config">
         <os:retrieve doc:name="Retrieve" doc:id="0b80aa0f-cc68-45f8-ac17-20aa7693162d" key="#[attributes.headers.buyercookie]" objectStore="cXMLCallbackStore" target="buyerUrl"/>
