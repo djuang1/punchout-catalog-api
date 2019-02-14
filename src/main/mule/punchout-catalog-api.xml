@@ -184,7 +184,7 @@ output application/xml
 		</choice>
     </flow>
     <flow name="get:\cxml:punchout-catalog-api-config">
-        <parse-template doc:name="Parse Template" doc:id="fddbd0b4-4f85-41e6-a814-c4b473001768" location="form.html" />
+        <parse-template doc:name="Parse Template" doc:id="fddbd0b4-4f85-41e6-a814-c4b473001768" location="cxml/form.html" />
     </flow>
     <flow name="get:\oci\PunchOutSetup:punchout-catalog-api-config">
 		<os:store doc:name="Store" doc:id="8078f5c4-7629-4d45-acce-2223815eaae2" objectStore="ociCallbackStore" key="#[attributes.queryParams.USERNAME]">
@@ -209,7 +209,7 @@ output application/xml
 			<os:default-value ><![CDATA[#["http://mock-buyer.us-e1.cloudhub.io/oci"]]]></os:default-value>
 		</os:retrieve>
 		<logger level="INFO" doc:name="Logger" doc:id="1f91670c-a7b8-4159-9018-2813afd7580f" />
-		<parse-template doc:name="Parse Template" doc:id="abccc0f5-9c4b-4cbe-aad3-416151a65413" location="oci.html"/>
+		<parse-template doc:name="Parse Template" doc:id="abccc0f5-9c4b-4cbe-aad3-416151a65413" location="oci/oci.html"/>
 		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="ed1389c6-05f7-4a23-98e3-4796c0d79189" mimeType="text/plain" />
 		<ee:transform doc:name="Transform Message" doc:id="db921e2f-092d-45fb-b03b-2a815d637f01">
 			<ee:message>

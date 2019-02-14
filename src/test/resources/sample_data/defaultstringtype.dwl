@@ -1,1 +1,0 @@
-<html> <head> <title>OCI ORDER TRANSMIT</title> </head> <body bgcolor="#ffffcc" text="#0000ff"> <?xml version='1.0' encoding='UTF-8'?> <form> <input name="NEW_ITEM-PRICE[1]" type="hidden" value="1050"/> <input name="NEW_ITEM-QUANTITY[1]" type="hidden" value="1"/> </form> <h3> Please wait while we transmit your order... </h3> </body> </html>
