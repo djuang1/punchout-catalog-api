@@ -1,7 +1,8 @@
 #%RAML 1.0
 version: v1
 title: PunchOut Catalog API
-baseUri: http://localhost:8081/api
+baseUri: https://localhost:8081/api
+protocols: [ HTTPS ]
 /oci:
   /PunchOutSetup:
     get:
@@ -17,7 +18,7 @@ baseUri: http://localhost:8081/api
         HOOKURL:
           description: URL where to return the contents of the cart.
           type:        string
-          example:     "lbailey@mrc.com"
+          example:     "http://mock-buyer.us-e1.cloudhub.io/oci"
         BUYER_USERNAME:
           description: Buyer Username
           type:        string
@@ -39,7 +40,7 @@ baseUri: http://localhost:8081/api
       responses:
         200:
           body:
-            text/html:
+            text/html:              
 /cxml:  
   get:
     responses:
@@ -68,6 +69,8 @@ baseUri: http://localhost:8081/api
     post:
       body:
         application/json:
+          example:
+            !include cart.json
       responses:
         200:
           body:
@@ -76,4 +79,3 @@ baseUri: http://localhost:8081/api
                 { 
                   "Status":"Success"
                 }
-             

@@ -73,12 +73,24 @@ type cart = {|
 
 ]]></types:shape>
     </types:type>
+    <types:type name="cxml_order_message" format="xml">
+      <types:example format="xml" element="cXML" location="cxml_order_message.xml"/>
+    </types:type>
   </types:catalog>
   <types:enrichment select="#283dd258-24ce-4d22-95e0-9e0c647f3058">
     <types:processor-declaration>
       <types:output-event>
         <types:message>
           <types:payload type="cxml_setup_response"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#1d3f37fe-9412-4c82-a21d-473faad06de7">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="cxml_order_message"/>
         </types:message>
       </types:output-event>
     </types:processor-declaration>

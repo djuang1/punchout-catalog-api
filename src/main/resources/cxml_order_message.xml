@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE cXML SYSTEM "http://xml.cXML.org/schemas/cXML/1.1.010/cXML.dtd">
+<cXML payloadID="1544727513919.1@testcatalog.mrcglobal.com"
+        timestamp="2018-12-13T13:58:33-5:00" version="1.1.010" xml:lang="en-US">
+        <Header>
+                <From>
+                        <Credential domain="NETWORKID">
+                                <Identity>AN01000001050-T</Identity>
+                        </Credential>
+                </From>
+                <To>
+                        <Credential domain="NETWORKID">
+                                <Identity>AN01000002779-T</Identity>
+                        </Credential>
+                </To>
+                <Sender>
+                        <Credential domain="NETWORKID">
+                                <Identity>AN01000001050-T</Identity>
+                                <SharedSecret/>
+                        </Credential>
+                        <UserAgent>Ariba Network 1.1</UserAgent>
+                </Sender>
+        </Header>
+        <Message>
+                <PunchOutOrderMessage>
+                        <BuyerCookie> k8KT8LT856SkQinBAxa5B2ZQW3QHeAVe0.06218566674171477332</BuyerCookie>
+                        <PunchOutOrderMessageHeader operationAllowed="edit">
+                                <Total>
+                                    <Money currency="USD">29.69</Money>
+                                </Total>
+                        </PunchOutOrderMessageHeader>
+                        <ItemIn quantity="1.0">
+                                <ItemID>
+                                    <SupplierPartID>16000019</SupplierPartID>
+                                    <SupplierPartAuxiliaryID>847003.999999996</SupplierPartAuxiliaryID>
+                                </ItemID>
+                                <ItemDetail>
+                                    <UnitPrice>
+                                    <Money currency="USD">29.69</Money>
+                                    </UnitPrice>
+                                    <Description xml:lang="en"><![CDATA[Elbow 1/2 Std 0.109 Welded Carbon Steel Black Long Radius 90 Degree SA234 WPB 0.84]]></Description>
+                                    <UnitOfMeasure>EA</UnitOfMeasure>
+                                    <Classification domain="SPSC">4017280000</Classification>
+                                    <Classification domain="UPC">00001</Classification>
+                                    <Classification domain="Commodity"><![CDATA[Steel Elbows_Elbows]]></Classification>
+                                    <Classification domain="UNSPSC">4017280000</Classification>
+                                </ItemDetail>
+                        </ItemIn>
+                </PunchOutOrderMessage>
+        </Message>
+</cXML>
