@@ -96,4 +96,6 @@ type cart = {|
       </types:output-event>
     </types:processor-declaration>
   </types:enrichment>
+  <types:enrichment select="#73a2e6d5-f4f8-4cec-8f9f-2a73d4f035fa"/>
+  <types:enrichment select="#b782771f-ba0a-4ddd-a92d-3431ca46fe81"/>
 </types:mule>
