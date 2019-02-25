@@ -183,12 +183,12 @@ output application/java
 			doc:id="18116804-df9f-4843-9852-56b9197a0b40" variableName="httpStatus" />
 	</flow>
 	<flow name="get:\cxml:punchout-catalog-api-config">
+		
 		<parse-template doc:name="Parse Template" doc:id="968bc83e-f2d7-40f8-a219-f84ad45138d6" location="cxml/form.html" />
     
 	</flow>
 	<flow name="post:\oci\callback:punchout-catalog-api-config">
-				<logger level="INFO" doc:name="Logger" doc:id="f87ac282-e028-42fc-9eba-2cc345e4c8d9" />
-		<os:retrieve doc:name="Retrieve" doc:id="68242bfd-12ba-4a2b-bb1e-748f4d787dde" key="#[payload.sfdcName]" objectStore="ociCallbackStore" target="buyerUrl">
+		<os:retrieve doc:name="Retrieve" doc:id="68242bfd-12ba-4a2b-bb1e-748f4d787dde" key="#[payload.username]" objectStore="ociCallbackStore" target="buyerUrl">
 			<os:default-value ><![CDATA[#["http://mock-buyer.us-e1.cloudhub.io/oci"]]]></os:default-value>
 		</os:retrieve>
 		<parse-template doc:name="Parse OCI Template" doc:id="5e079244-47d7-471f-8572-ec34ceded161" location="oci/oci.html"/>
@@ -217,6 +217,9 @@ output application/json
     
 	</flow>
 	<flow name="post:\cxml\callback:punchout-catalog-api-config">
+		<os:retrieve doc:name="Retrieve" doc:id="1387eb72-7cc1-42f1-8c9b-684e283ecca9" key="#[payload.username]" objectStore="cXMLCallbackStore" target="buyerUrl">
+			<os:default-value ><![CDATA[#["http://mock-buyer.us-e1.cloudhub.io/cxml"]]]></os:default-value>
+		</os:retrieve>
 		<ee:transform doc:name="Transform Message"
 			doc:id="b7fefc00-1df0-47e8-bf1c-8866306966f2">
 			<ee:message>
@@ -260,9 +263,20 @@ inlineCloseOn = "none"
 }]]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
+		<http:request method="POST" doc:name="Request" doc:id="3ab3d0ba-7bd0-4742-b281-b562e26d1b91" url='#[vars.buyerURL default "http://mock-buyer.us-e1.cloudhub.io/cxml"]'/>
+		<ee:transform doc:name="Transform Message" doc:id="370c18ba-0915-4262-b9f9-8b06f4fe5660" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Status": "Success",
+	"Type": payload.Status default ""
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
 	</flow>
 	<flow name="post:\cxml:punchout-catalog-api-config">
-		<logger level="INFO" doc:name="Logger" doc:id="e6c180dc-980c-40aa-9ab6-1854c07763ae" />
 		<ee:transform doc:name="Transform Message" doc:id="4feca8b5-4aea-4c5f-bfee-3cb474ac1767">
 			<ee:message>
 				<ee:set-payload><![CDATA[%dw 2.0
@@ -273,7 +287,9 @@ payload.'cXML-urlencoded' as String replace /\<!DOCTYPE.+\>/ with '']]></ee:set-
 		</ee:transform>
 		<set-payload value="#[output application/xml --- read(payload,'application/xml')]" doc:name="Set Payload" doc:id="a75045a0-50b0-49bf-92c9-40029b450abd" />
 		<set-variable value="#[output text/plain --- payload.cXML.Request.PunchOutSetupRequest.@operation]" doc:name="Set Operation" doc:id="52a5bcb5-2854-4757-97bf-643cc49009ae" variableName="operation"/>
-		<os:store doc:name="Store" doc:id="0026ba95-746b-421f-a059-a34b7693c534" key="#[output text/plain --- payload.cXML.Request.PunchOutSetupRequest.BuyerCookie]" objectStore="cXMLCallbackStore">
+		<os:store doc:name="Store" doc:id="0026ba95-746b-421f-a059-a34b7693c534" key='#[output text/plain
+---
+(payload.cXML.Request.PunchOutSetupRequest.*Extrinsic filter ($.@name == "UniqueUsername"))[0]]' objectStore="cXMLCallbackStore">
 			<os:value ><![CDATA[#[output text/plain --- payload.cXML.Request.PunchOutSetupRequest.BrowserFormPost.URL]]]></os:value>
 		</os:store>
 		<choice doc:name="Choice" doc:id="5401a232-8c9c-4107-b47a-067e8356c442" >
