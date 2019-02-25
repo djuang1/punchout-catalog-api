@@ -40,12 +40,20 @@ protocols: [ HTTPS ]
       responses:
         200:
           body:
-            text/html:              
+            application/json:
+              example:
+                {
+                    "Status": "Success",
+                    "Type": "OCI"
+                }            
 /cxml:  
   get:
+    displayName: cXML Tester
+    description: Provides an interface to test a cXML message
     responses:
       200:         
   post:    
+    displayName: cXML PunchOut Setup
     body:
       application/x-www-form-urlencoded:        
     responses:
@@ -77,5 +85,6 @@ protocols: [ HTTPS ]
             application/json:
               example:
                 { 
-                  "Status":"Success"
+                  "Status":"Success",
+                  "Type":"cXML"
                 }

@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-	xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway"
-	xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit"
-	xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
+<mule xmlns:tls="http://www.mulesoft.org/schema/mule/tls"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:os="http://www.mulesoft.org/schema/mule/os"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd 
 http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd
 http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	<http:listener-config name="punchout-catalog-api-httpListenerConfig">
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+	<http:listener-config name="punchout-catalog-api-httpsListenerConfig">
 		<http:listener-connection host="0.0.0.0"
-			port="8081" />
+			port="${https.port}" protocol="HTTPS">
+			<tls:context >
+				<tls:key-store type="jks" path="keystore.jks" alias="mule" keyPassword="password" password="password" />
+			</tls:context>
+		</http:listener-connection>
 	</http:listener-config>
 	<apikit:config name="punchout-catalog-api-config" raml="punchout-catalog-api.raml"
 		outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
@@ -25,13 +30,13 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<os:object-store name="ociCallbackStore" doc:name="Object store"
 		doc:id="bd7f6ed5-23fd-4b02-8827-8bed895ab3f3" />
 	<flow name="punchout-catalog-api-main">
-		<http:listener config-ref="punchout-catalog-api-httpListenerConfig"
+		<http:listener config-ref="punchout-catalog-api-httpsListenerConfig"
 			path="/api/*">
 			<http:response statusCode="#[vars.httpStatus default 200]">
 				<http:headers>#[vars.outboundHeaders default {}]</http:headers>
 			</http:response>
 			<http:error-response statusCode="#[vars.httpStatus default 500]">
-				<http:body>#[payload]</http:body>
+				<http:body><![CDATA[#[payload]]]></http:body>
 				<http:headers>#[vars.outboundHeaders default {}]</http:headers>
 			</http:error-response>
 		</http:listener>
@@ -130,21 +135,20 @@ output application/json
 		</error-handler>
 	</flow>
 	<flow name="punchout-catalog-api-console">
-		<http:listener config-ref="punchout-catalog-api-httpListenerConfig"
+		<http:listener config-ref="punchout-catalog-api-httpsListenerConfig"
 			path="/console/*">
 			<http:response statusCode="#[vars.httpStatus default 200]">
-				<http:headers>#[vars.outboundHeaders default {}]</http:headers>
 			</http:response>
 			<http:error-response statusCode="#[vars.httpStatus default 500]">
-				<http:body>#[payload]</http:body>
-				<http:headers>#[vars.outboundHeaders default {}]</http:headers>
+				<http:body><![CDATA[#[payload]]]></http:body>
 			</http:error-response>
 		</http:listener>
 		<apikit:console config-ref="punchout-catalog-api-config" />
 		<error-handler>
 			<on-error-propagate type="APIKIT:NOT_FOUND">
 				<ee:transform xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
-					xsi:schemaLocation="http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+					xsi:schemaLocation="
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 					<ee:message>
 						<ee:set-payload><![CDATA[%dw 2.0
 output application/json
@@ -164,10 +168,6 @@ output application/json
 			objectStore="ociCallbackStore" key="#[attributes.queryParams.USERNAME]">
 			<os:value><![CDATA[#[attributes.queryParams.HOOKURL]]]></os:value>
 		</os:store>
-		<set-variable
-			value='#[(vars.outboundHeaders default {}) ++ {"Location":"https://sdodemo-main-166ce2cf6b6-1683e62625a.force.com/DefaultStore/login?pw=salesforce1&amp;un=lbailey@mrc.com"}]'
-			doc:name="Set Location Header" doc:id="fc1fe281-1dfa-4099-b002-d32a103bd82c"
-			variableName="outboundHeaders" />
 		<ee:transform doc:name="Transform Message" doc:id="b782771f-ba0a-4ddd-a92d-3431ca46fe81" >
 			<ee:message >
 			</ee:message>
@@ -187,7 +187,8 @@ output application/java
     
 	</flow>
 	<flow name="post:\oci\callback:punchout-catalog-api-config">
-				<os:retrieve doc:name="Retrieve" doc:id="68242bfd-12ba-4a2b-bb1e-748f4d787dde" key="#[payload.sfdcName]" objectStore="ociCallbackStore" target="buyerUrl">
+				<logger level="INFO" doc:name="Logger" doc:id="f87ac282-e028-42fc-9eba-2cc345e4c8d9" />
+		<os:retrieve doc:name="Retrieve" doc:id="68242bfd-12ba-4a2b-bb1e-748f4d787dde" key="#[payload.sfdcName]" objectStore="ociCallbackStore" target="buyerUrl">
 			<os:default-value ><![CDATA[#["http://mock-buyer.us-e1.cloudhub.io/oci"]]]></os:default-value>
 		</os:retrieve>
 		<parse-template doc:name="Parse OCI Template" doc:id="5e079244-47d7-471f-8572-ec34ceded161" location="oci/oci.html"/>
@@ -201,6 +202,18 @@ payload as String replace /\<\?xml.+\>/ with '']]></ee:set-payload>
 			</ee:message>
 		</ee:transform>
 		<set-payload value="#[payload]" doc:name="Set MIME Type" doc:id="3d5aa007-7506-4c30-a1e8-ec38766e5cc6" mimeType="text/html"/>
+		<http:request method="POST" doc:name="Request" doc:id="aaf5c15c-68bd-40ca-9c66-485ac3098895" url='#[vars.buyerURL default "http://mock-buyer.us-e1.cloudhub.io/oci"]'/>
+		<ee:transform doc:name="Transform Message" doc:id="30a9b135-dce4-4dd0-b803-38778de7d1db" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	"Status": "Success",
+	"Type": payload.Status default ""
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
     
 	</flow>
 	<flow name="post:\cxml\callback:punchout-catalog-api-config">
