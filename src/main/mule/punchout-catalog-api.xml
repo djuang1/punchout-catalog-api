@@ -139,7 +139,7 @@ output application/json
                 <ee:set-variable variableName="outboundHeaders"><![CDATA[%dw 2.0
 output application/java
 ---
-(vars.outboundHeaders default {}) ++ {"Location":"https://sdodemo-main-166ce2cf6b6-1683e62625a.force.com/DefaultStore/login?pw=" ++ attributes.queryParams.PASSWORD ++ "&un=" ++ attributes.queryParams.USERNAME}]]></ee:set-variable>
+(vars.outboundHeaders default {}) ++ {"Location":"https://" ++ Mule::p('sfdc_cc.url') ++ "/DefaultStore/login?pw=" ++ attributes.queryParams.PASSWORD ++ "&un=" ++ attributes.queryParams.USERNAME}]]></ee:set-variable>
             </ee:variables>
         </ee:transform>
         <set-variable value="302" doc:name="Set HTTP Status" doc:id="18116804-df9f-4843-9852-56b9197a0b40" variableName="httpStatus" />
@@ -149,7 +149,7 @@ output application/java
     </flow>
     <flow name="post:\oci\callback:punchout-catalog-api-config">
         <os:retrieve doc:name="Retrieve" doc:id="68242bfd-12ba-4a2b-bb1e-748f4d787dde" key="#[payload.username]" objectStore="ociCallbackStore" target="buyerUrl">
-            <os:default-value><![CDATA[#["http://mock-buyer.us-e1.cloudhub.io/oci"]]]></os:default-value>
+            <os:default-value><![CDATA[#[Mule::p('oci.mock.url')]]]></os:default-value>
         </os:retrieve>
         <parse-template doc:name="Parse OCI Template" doc:id="5e079244-47d7-471f-8572-ec34ceded161" location="oci/oci.html" />
         <set-payload value="#[payload]" doc:name="Set MIME Type" doc:id="5687fd1f-d875-4a0d-ad00-f5aaea331217" mimeType="text/plain" />
@@ -162,7 +162,7 @@ payload as String replace /\<\?xml.+\>/ with '']]></ee:set-payload>
             </ee:message>
         </ee:transform>
         <set-payload value="#[payload]" doc:name="Set MIME Type" doc:id="3d5aa007-7506-4c30-a1e8-ec38766e5cc6" mimeType="text/html" />
-        <http:request method="POST" doc:name="Request" doc:id="aaf5c15c-68bd-40ca-9c66-485ac3098895" url="#[vars.buyerURL default &quot;http://mock-buyer.us-e1.cloudhub.io/oci&quot;]" />
+        <http:request method="POST" doc:name="Request" doc:id="aaf5c15c-68bd-40ca-9c66-485ac3098895" url="#[vars.buyerURL default Mule::p('oci.mock.url')]" />
         <ee:transform doc:name="Transform Message" doc:id="30a9b135-dce4-4dd0-b803-38778de7d1db">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
@@ -177,7 +177,7 @@ output application/json
     </flow>
     <flow name="post:\cxml\callback:punchout-catalog-api-config">
         <os:retrieve doc:name="Retrieve" doc:id="1387eb72-7cc1-42f1-8c9b-684e283ecca9" key="#[payload.username]" objectStore="cXMLCallbackStore" target="buyerUrl">
-            <os:default-value><![CDATA[#["http://mock-buyer.us-e1.cloudhub.io/cxml"]]]></os:default-value>
+            <os:default-value><![CDATA[#[Mule::p('cxml.mock.url')]]]></os:default-value>
         </os:retrieve>
         <ee:transform doc:name="Transform Message" doc:id="b7fefc00-1df0-47e8-bf1c-8866306966f2">
             <ee:message>
@@ -221,7 +221,7 @@ inlineCloseOn = "none"
 }]]></ee:set-payload>
             </ee:message>
         </ee:transform>
-        <http:request method="POST" doc:name="Request" doc:id="3ab3d0ba-7bd0-4742-b281-b562e26d1b91" url="#[vars.buyerURL default &quot;http://mock-buyer.us-e1.cloudhub.io/cxml&quot;]" />
+        <http:request method="POST" doc:name="Request" doc:id="3ab3d0ba-7bd0-4742-b281-b562e26d1b91" url="#[vars.buyerURL default Mule::p('cxml.mock.url')]" />
         <ee:transform doc:name="Transform Message" doc:id="370c18ba-0915-4262-b9f9-8b06f4fe5660">
             <ee:message>
                 <ee:set-payload><![CDATA[%dw 2.0
@@ -270,7 +270,7 @@ output application/xml
 			Status @(code: 200 , text: "OK"): null,
 			PunchOutSetupResponse: {
 				StartPage: {
-					URL: "https://punchout-catalog-api.us-e1.cloudhub.io/api/cxml/authenticate?pkey=" ++ vars.pkey ++ "&ukey=" ++ vars.ukey
+					URL: "https://" ++ Mule::p('host.url') ++ "/api/cxml/authenticate?pkey=" ++ vars.pkey ++ "&ukey=" ++ vars.ukey
 				}
 			}
 		}
@@ -293,7 +293,7 @@ output application/xml
 import * from dw::core::Binaries
 output application/java
 ---
-(vars.outboundHeaders default {}) ++ {"Location":"https://sdodemo-main-166ce2cf6b6-1683e62625a.force.com/DefaultStore/login?pw=" ++ fromBase64(attributes.queryParams.pkey) ++ "&un=" ++ fromBase64(attributes.queryParams.ukey)}]]></ee:set-variable>
+(vars.outboundHeaders default {}) ++ {"Location":"https://" ++ Mule::p('sfdc_cc.url') ++ "/DefaultStore/login?pw=" ++ fromBase64(attributes.queryParams.pkey) ++ "&un=" ++ fromBase64(attributes.queryParams.ukey)}]]></ee:set-variable>
             </ee:variables>
         </ee:transform>
         <set-variable value="302" doc:name="Set HTTP Status" doc:id="da32c666-fcdb-4ae1-aa0b-ba7a50799d4e" variableName="httpStatus" />
