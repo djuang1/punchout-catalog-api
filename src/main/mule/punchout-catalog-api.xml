@@ -129,11 +129,18 @@ output application/json
         </error-handler>
     </flow>
     <flow name="get:\oci\PunchOutSetup:punchout-catalog-api-config">
-        <logger level="INFO" doc:name="Logger" doc:id="f684af34-bd85-46f0-bff9-65ce0bccab71" />
         <os:store doc:name="Store" doc:id="c8d890b4-d0bc-4d61-ad06-2865eb516567" objectStore="ociCallbackStore" key="#[attributes.queryParams.USERNAME]">
             <os:value><![CDATA[#[attributes.queryParams.HOOKURL]]]></os:value>
         </os:store>
-        <ee:transform doc:name="Transform Message" doc:id="b782771f-ba0a-4ddd-a92d-3431ca46fe81">
+		<choice doc:name="Choice" doc:id="c68d8cc3-a8a9-4bd1-a945-a5fee8d39653" >
+			<when expression='#[(attributes.queryParams.FUNCTION == "SEARCH") or (attributes.queryParams.FUNCTION == "BACKGROUND_SEARCH")]'>
+				<logger level="INFO" doc:name="SEARCH" doc:id="71d94ff6-a1e2-40ee-a130-8d3cad04b5dc" message="SEARCH"/>
+			</when>
+			<when expression='#[attributes.queryParams.FUNCTION == "VALIDATE"]'>
+				<logger level="INFO" doc:name="VALIDATE" doc:id="ec10a099-6d76-46da-be50-2e4b0020b776" message="VALIDATE"/>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="b782771f-ba0a-4ddd-a92d-3431ca46fe81">
             <ee:message />
             <ee:variables>
                 <ee:set-variable variableName="outboundHeaders"><![CDATA[%dw 2.0
@@ -142,7 +149,9 @@ output application/java
 (vars.outboundHeaders default {}) ++ {"Location":"https://" ++ Mule::p('sfdc_cc.url') ++ "/DefaultStore/login?pw=" ++ attributes.queryParams.PASSWORD ++ "&un=" ++ attributes.queryParams.USERNAME}]]></ee:set-variable>
             </ee:variables>
         </ee:transform>
-        <set-variable value="302" doc:name="Set HTTP Status" doc:id="18116804-df9f-4843-9852-56b9197a0b40" variableName="httpStatus" />
+				<set-variable value="302" doc:name="Set HTTP Status" doc:id="18116804-df9f-4843-9852-56b9197a0b40" variableName="httpStatus" />
+			</otherwise>
+		</choice>
     </flow>
     <flow name="get:\cxml:punchout-catalog-api-config">
         <parse-template doc:name="Parse Template" doc:id="968bc83e-f2d7-40f8-a219-f84ad45138d6" location="cxml/form.html" />
