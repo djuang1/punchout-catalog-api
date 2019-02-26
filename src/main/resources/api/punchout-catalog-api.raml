@@ -25,12 +25,15 @@ protocols: [ HTTPS ]
           example:     "lbailey"
         FUNCTION:
           enum:       [VALIDATE, SEARCH, BACKGROUND_SEARCH]
+          required:   false
         SEARCHSTRING:
           description: Search string
           type:       string
+          required:   false
         PRODUCTID:
           description: Product ID
           type:       string
+          required:   false
   /callback:
     post:
       body:
@@ -73,6 +76,17 @@ protocols: [ HTTPS ]
                 </PunchOutSetupResponse>
               </Response>
               </cXML>
+  /authenticate:
+    get:
+      queryParameters:
+        ukey:
+          description: Base64 encoded username
+          type:        string
+          example:     "cGFydHN4cHJlc3NAY2Flc2Fycy5jb20%3D"
+        pkey:
+          description: Base64 encoded password
+          type:        string
+          example:     "Y2Flc2Fyczc3Nw%3D%3D"
   /callback:
     post:
       body:
@@ -85,6 +99,5 @@ protocols: [ HTTPS ]
             application/json:
               example:
                 { 
-                  "Status":"Success",
-                  "Type":"cXML"
+                  "Status":"Success"
                 }
