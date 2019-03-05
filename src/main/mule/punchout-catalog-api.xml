@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd">
+<mule xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:api-gateway="http://www.mulesoft.org/schema/mule/api-gateway" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:os="http://www.mulesoft.org/schema/mule/os" xmlns:tls="http://www.mulesoft.org/schema/mule/tls" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd  http://www.mulesoft.org/schema/mule/os http://www.mulesoft.org/schema/mule/os/current/mule-os.xsd http://www.mulesoft.org/schema/mule/api-gateway http://www.mulesoft.org/schema/mule/api-gateway/current/mule-api-gateway.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/tls http://www.mulesoft.org/schema/mule/tls/current/mule-tls.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd">
     <http:listener-config name="punchout-catalog-api-httpsListenerConfig">
         <http:listener-connection host="0.0.0.0" port="${https.port}" protocol="HTTPS">
             <tls:context>
@@ -12,7 +14,10 @@
     <configuration-properties doc:name="Configuration properties" doc:id="6ab5b304-0b46-4df1-9090-82192466dce9" file="mule.properties" />
     <os:object-store name="cXMLCallbackStore" doc:name="Object store" doc:id="87227eab-44a1-4e3b-a46c-4bfecb4aa182" />
     <os:object-store name="ociCallbackStore" doc:name="Object store" doc:id="bd7f6ed5-23fd-4b02-8827-8bed895ab3f3" />
-    <flow name="punchout-catalog-api-main">
+    <db:config name="Database_Config" doc:name="Database Config" doc:id="5c6c1f85-a71c-4bf0-8379-c15b859cb31e" >
+		<db:my-sql-connection host="${db.host}" port="${db.port}" user="${db.user}" password="${db.password}" database="${db.db}" />
+	</db:config>
+	<flow name="punchout-catalog-api-main">
         <http:listener config-ref="punchout-catalog-api-httpsListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
                 <http:headers>#[vars.outboundHeaders default {}]</http:headers>
@@ -132,26 +137,26 @@ output application/json
         <os:store doc:name="Store" doc:id="c8d890b4-d0bc-4d61-ad06-2865eb516567" objectStore="ociCallbackStore" key="#[attributes.queryParams.USERNAME]">
             <os:value><![CDATA[#[attributes.queryParams.HOOKURL]]]></os:value>
         </os:store>
-		<choice doc:name="Choice" doc:id="c68d8cc3-a8a9-4bd1-a945-a5fee8d39653" >
-			<when expression='#[(attributes.queryParams.FUNCTION == "SEARCH") or (attributes.queryParams.FUNCTION == "BACKGROUND_SEARCH")]'>
-				<logger level="INFO" doc:name="SEARCH" doc:id="71d94ff6-a1e2-40ee-a130-8d3cad04b5dc" message="SEARCH"/>
-			</when>
-			<when expression='#[attributes.queryParams.FUNCTION == "VALIDATE"]'>
-				<logger level="INFO" doc:name="VALIDATE" doc:id="ec10a099-6d76-46da-be50-2e4b0020b776" message="VALIDATE"/>
-			</when>
-			<otherwise >
-				<ee:transform doc:name="Transform Message" doc:id="b782771f-ba0a-4ddd-a92d-3431ca46fe81">
-            <ee:message />
-            <ee:variables>
-                <ee:set-variable variableName="outboundHeaders"><![CDATA[%dw 2.0
+        <choice doc:name="Choice" doc:id="c68d8cc3-a8a9-4bd1-a945-a5fee8d39653">
+            <when expression="#[(attributes.queryParams.FUNCTION == &quot;SEARCH&quot;) or (attributes.queryParams.FUNCTION == &quot;BACKGROUND_SEARCH&quot;)]">
+                <logger level="INFO" doc:name="SEARCH" doc:id="71d94ff6-a1e2-40ee-a130-8d3cad04b5dc" message="SEARCH" />
+            </when>
+            <when expression="#[attributes.queryParams.FUNCTION == &quot;VALIDATE&quot;]">
+                <logger level="INFO" doc:name="VALIDATE" doc:id="ec10a099-6d76-46da-be50-2e4b0020b776" message="VALIDATE" />
+            </when>
+            <otherwise>
+                <ee:transform doc:name="Transform Message" doc:id="b782771f-ba0a-4ddd-a92d-3431ca46fe81">
+                    <ee:message />
+                    <ee:variables>
+                        <ee:set-variable variableName="outboundHeaders"><![CDATA[%dw 2.0
 output application/java
 ---
 (vars.outboundHeaders default {}) ++ {"Location":"https://" ++ Mule::p('sfdc_cc.url') ++ "/DefaultStore/login?pw=" ++ attributes.queryParams.PASSWORD ++ "&un=" ++ attributes.queryParams.USERNAME}]]></ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-				<set-variable value="302" doc:name="Set HTTP Status" doc:id="18116804-df9f-4843-9852-56b9197a0b40" variableName="httpStatus" />
-			</otherwise>
-		</choice>
+                    </ee:variables>
+                </ee:transform>
+                <set-variable value="302" doc:name="Set HTTP Status" doc:id="18116804-df9f-4843-9852-56b9197a0b40" variableName="httpStatus" />
+            </otherwise>
+        </choice>
     </flow>
     <flow name="get:\cxml:punchout-catalog-api-config">
         <parse-template doc:name="Parse Template" doc:id="968bc83e-f2d7-40f8-a219-f84ad45138d6" location="cxml/form.html" />
@@ -254,15 +259,9 @@ payload.'cXML-urlencoded' as String replace /\<!DOCTYPE.+\>/ with '']]></ee:set-
         </ee:transform>
         <set-payload value="#[output application/xml --- read(payload,'application/xml')]" doc:name="Set Payload" doc:id="a75045a0-50b0-49bf-92c9-40029b450abd" />
         <set-variable value="#[output text/plain --- payload.cXML.Request.PunchOutSetupRequest.@operation]" doc:name="Set Operation" doc:id="52a5bcb5-2854-4757-97bf-643cc49009ae" variableName="operation" />
-        <set-variable value="#[import * from dw::core::Binaries
-output text/plain 
---- 
-toBase64(payload.cXML.Header.Sender.Credential.Identity as Binary)]" doc:name="Set ukey" doc:id="c9846012-14a2-4238-a00f-03b9e8e3c456" variableName="ukey"/>
-		<set-variable value="#[import * from dw::core::Binaries
-output text/plain 
---- 
-toBase64(payload.cXML.Header.Sender.Credential.SharedSecret as Binary)]" doc:name="Set pkey" doc:id="70fdf373-6453-4a7e-99db-b7a75dde3066" variableName="pkey"/>
-		<os:store doc:name="Store" doc:id="0026ba95-746b-421f-a059-a34b7693c534" key="#[output text/plain --- (payload.cXML.Request.PunchOutSetupRequest.*Extrinsic filter ($.@name == &quot;UniqueUsername&quot;))[0]]" objectStore="cXMLCallbackStore">
+        <set-variable value="#[import * from dw::core::Binaries output text/plain  ---  toBase64(payload.cXML.Header.Sender.Credential.Identity as Binary)]" doc:name="Set ukey" doc:id="c9846012-14a2-4238-a00f-03b9e8e3c456" variableName="ukey" />
+        <set-variable value="#[import * from dw::core::Binaries output text/plain  ---  toBase64(payload.cXML.Header.Sender.Credential.SharedSecret as Binary)]" doc:name="Set pkey" doc:id="70fdf373-6453-4a7e-99db-b7a75dde3066" variableName="pkey" />
+        <os:store doc:name="Store" doc:id="0026ba95-746b-421f-a059-a34b7693c534" key="#[output text/plain --- (payload.cXML.Request.PunchOutSetupRequest.*Extrinsic filter ($.@name == &quot;UniqueUsername&quot;))[0]]" objectStore="cXMLCallbackStore">
             <os:value><![CDATA[#[output text/plain --- payload.cXML.Request.PunchOutSetupRequest.BrowserFormPost.URL]]]></os:value>
         </os:store>
         <choice doc:name="Choice" doc:id="5401a232-8c9c-4107-b47a-067e8356c442">
@@ -306,5 +305,60 @@ output application/java
             </ee:variables>
         </ee:transform>
         <set-variable value="302" doc:name="Set HTTP Status" doc:id="da32c666-fcdb-4ae1-aa0b-ba7a50799d4e" variableName="httpStatus" />
+    </flow>
+    <flow name="get:\cif:punchout-catalog-api-config">
+        <db:select doc:name="Select" doc:id="66c3f558-bf72-4076-b2e3-4d6aa66fd708" config-ref="Database_Config">
+			<db:sql >select * from catalog</db:sql>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="10436738-42df-4cbe-ae68-f535c7f025c2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/csv headerLineNumber = 0 , header = false, quote="\""
+---
+{"Header":"DATA"} +
+((payload map ( payload01 , indexOfPayload01 ) -> {
+	"﻿Supplier ID": payload01.Supplier_ID,
+	"Supplier Part ID": payload01.Supplier_Part_ID as String,
+	"Manufacturer Part ID": payload01.Manufacturer_Part_ID default "",
+	"Item Description": "\"" ++ payload01.Item_Description ++ "\"",
+	"SPSC Code": payload01.SPSC_Code as String,
+	"Unit Price": payload01.Unit_Price default "",
+	"Unit of Measure": payload01.Unit_of_Measure,
+	"Lead Time": payload01.Lead_Time default "",
+	"Manufacturer Name": payload01.Manufacturer_Name default "",
+	"Supplier URL": payload01.Supplier_URL,
+	"Manufacturer URL": payload01.Manufacturer_URL default "",
+	"Market Price": payload01.Market_Price default "",
+	"PunchOut Enabled": payload01.PunchOut_Enabled
+}) +
+{"Footer":"ENDOFDATA"})]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="cifHeader" ><![CDATA[%dw 2.0
+output application/csv headerLineNumber = 0, separator=" ", header = false, escape=""
+---
+[
+	"key":"CIF_I_V3.0",
+	{"key":"CHARSET:", "value":"UTF-8"},
+	{"key":"LOADMODE:", "value":"F"},
+	{"key":"CODEFORMAT:", "value":"UNSPSC_V13.5"},
+	{"key":"CURRENCY:", "value":"USD"},
+	{"key":"SUPPLIERID_DOMAIN:", "value":"NetworkID"},
+	{"key":"ITEMCOUNT:", "value":sizeOf(payload)},
+	{"key":"TIMESTAMP:", "value":now() as String {format: "MM-dd-YYYY HH:mm"} },
+	{"key":"UNUOM:", "value":"TRUE"},
+	{"key":"COMMENTS:", "value":" This is a CIF 3.0 file generated by mulesoft.com"},
+	{"key":"FIELDNAMES:", "value":"Supplier ID,Supplier Part ID,Manufacturer Part ID,Item Description,SPSC Code,Unit Price,Unit of Measure,Lead Time,Manufacturer Name,Supplier URL,Manufacturer URL,Market Price,PunchOut Enabled"},
+]]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<ee:transform doc:name="Transform Message" doc:id="23b7d4a0-8667-47c0-8a55-03e7fa22afc7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output text/plain
+---
+vars.cifHeader.^raw ++ payload.^raw]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
     </flow>
 </mule>
