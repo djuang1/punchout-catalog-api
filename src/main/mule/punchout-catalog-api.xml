@@ -314,9 +314,12 @@ output application/java
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/csv headerLineNumber = 0 , header = false, quote="\""
+
+var obj1 = [{Header: "DATA"}]
+var obj2 = [{Footer:"ENDOFDATA"}]
 ---
-{"Header":"DATA"} +
-((payload map ( payload01 , indexOfPayload01 ) -> {
+obj1 ++
+(payload map ( payload01 , indexOfPayload01 ) -> {
 	"﻿Supplier ID": payload01.Supplier_ID,
 	"Supplier Part ID": payload01.Supplier_Part_ID as String,
 	"Manufacturer Part ID": payload01.Manufacturer_Part_ID default "",
@@ -330,8 +333,8 @@ output application/csv headerLineNumber = 0 , header = false, quote="\""
 	"Manufacturer URL": payload01.Manufacturer_URL default "",
 	"Market Price": payload01.Market_Price default "",
 	"PunchOut Enabled": payload01.PunchOut_Enabled
-}) +
-{"Footer":"ENDOFDATA"})]]></ee:set-payload>
+})
+++ obj2]]></ee:set-payload>
 			</ee:message>
 			<ee:variables >
 				<ee:set-variable variableName="cifHeader" ><![CDATA[%dw 2.0
