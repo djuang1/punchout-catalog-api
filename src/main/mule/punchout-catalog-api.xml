@@ -10,7 +10,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
         </http:listener-connection>
     </http:listener-config>
     <apikit:config name="punchout-catalog-api-config" raml="punchout-catalog-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
-    <api-gateway:autodiscovery apiId="15635843" doc:name="API Autodiscovery" doc:id="3c5f1e7e-33c0-41a8-ae33-9cd2ac64626e" flowRef="punchout-catalog-api-main" />
+    <api-gateway:autodiscovery apiId="16042739" doc:name="API Autodiscovery" doc:id="3c5f1e7e-33c0-41a8-ae33-9cd2ac64626e" flowRef="punchout-catalog-api-main" />
     <configuration-properties doc:name="Configuration properties" doc:id="6ab5b304-0b46-4df1-9090-82192466dce9" file="mule.properties" />
     <os:object-store name="cXMLCallbackStore" doc:name="Object store" doc:id="87227eab-44a1-4e3b-a46c-4bfecb4aa182" />
     <os:object-store name="ociCallbackStore" doc:name="Object store" doc:id="bd7f6ed5-23fd-4b02-8827-8bed895ab3f3" />
