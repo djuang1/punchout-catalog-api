@@ -10,6 +10,7 @@ http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/cu
         </http:listener-connection>
     </http:listener-config>
     <apikit:config name="punchout-catalog-api-config" raml="punchout-catalog-api.raml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <api-gateway:autodiscovery apiId="16042739" doc:name="API Autodiscovery" doc:id="3c5f1e7e-33c0-41a8-ae33-9cd2ac64626e" flowRef="punchout-catalog-api-main" />
     <configuration-properties doc:name="Configuration properties" doc:id="6ab5b304-0b46-4df1-9090-82192466dce9" file="mule.properties" />
     <os:object-store name="cXMLCallbackStore" doc:name="Object store" doc:id="87227eab-44a1-4e3b-a46c-4bfecb4aa182" />
     <os:object-store name="ociCallbackStore" doc:name="Object store" doc:id="bd7f6ed5-23fd-4b02-8827-8bed895ab3f3" />
@@ -307,31 +308,33 @@ output application/java
     </flow>
     <flow name="get:\cif:punchout-catalog-api-config">
         <db:select doc:name="Select" doc:id="66c3f558-bf72-4076-b2e3-4d6aa66fd708" config-ref="Database_Config">
-			<db:sql ><![CDATA[select * from catalog]]></db:sql>
+			<db:sql >select * from catalog</db:sql>
 		</db:select>
 		<ee:transform doc:name="Transform Message" doc:id="10436738-42df-4cbe-ae68-f535c7f025c2" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
 output application/csv headerLineNumber = 0 , header = false, quote="\""
+
+var obj1 = [{Header: "DATA"}]
+var obj2 = [{Footer:"ENDOFDATA"}]
 ---
-{"Header":"DATA"} +
-((payload map ( payload01 , indexOfPayload01 ) -> {
-	"﻿Supplier ID": payload01.Supplier_ID
-	//,
-	//"Supplier Part ID": payload01.Supplier_Part_ID as String,
-	//"Manufacturer Part ID": payload01.Manufacturer_Part_ID default "",
-	//"Item Description": "\"" ++ payload01.Item_Description ++ "\"",
-	//"SPSC Code": payload01.SPSC_Code as String,
-	//"Unit Price": payload01.Unit_Price default "",
-	//"Unit of Measure": payload01.Unit_of_Measure,
-	//"Lead Time": payload01.Lead_Time default "",
-	//"Manufacturer Name": payload01.Manufacturer_Name default "",
-	//"Supplier URL": payload01.Supplier_URL,
-	//"Manufacturer URL": payload01.Manufacturer_URL default "",
-	//"Market Price": payload01.Market_Price default "",
-	//"PunchOut Enabled": payload01.PunchOut_Enabled
-}) +
-{"Footer":"ENDOFDATA"})]]></ee:set-payload>
+obj1 ++
+(payload map ( payload01 , indexOfPayload01 ) -> {
+	"﻿Supplier ID": payload01.Supplier_ID,
+	"Supplier Part ID": payload01.Supplier_Part_ID as String,
+	"Manufacturer Part ID": payload01.Manufacturer_Part_ID default "",
+	"Item Description": "\"" ++ payload01.Item_Description ++ "\"",
+	"SPSC Code": payload01.SPSC_Code as String,
+	"Unit Price": payload01.Unit_Price default "",
+	"Unit of Measure": payload01.Unit_of_Measure,
+	"Lead Time": payload01.Lead_Time default "",
+	"Manufacturer Name": payload01.Manufacturer_Name default "",
+	"Supplier URL": payload01.Supplier_URL,
+	"Manufacturer URL": payload01.Manufacturer_URL default "",
+	"Market Price": payload01.Market_Price default "",
+	"PunchOut Enabled": payload01.PunchOut_Enabled
+})
+++ obj2]]></ee:set-payload>
 			</ee:message>
 			<ee:variables >
 				<ee:set-variable variableName="cifHeader" ><![CDATA[%dw 2.0
